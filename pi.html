@@ -1,0 +1,81 @@
+<html>
+    <head>
+      <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+      <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    </head>
+
+  <body>
+    <h1>使用隨機亂數求 π 值</h1>
+    
+    <py-config type="toml">
+        packages = ["numpy", "matplotlib"]
+    </py-config>
+    
+    <input type="number" id="n"/>
+    <button id="submit-button" type="button" py-click="compute_pi()">Compute</button>
+    <div id="plot"></div>
+    <div id="toutput1"></div>
+    <div id="toutput2"></div>
+    <div id="toutput3"></div>
+    <py-script>
+    #print("Let's compute π:")
+    def compute_pi():
+        import math
+        import numpy as np
+        import matplotlib.pyplot as plt
+        import random
+        from pyscript import Element
+        from js import document as _DOC
+
+        ter = _DOC.getElementById("toutput1")
+        ter.innerHTML = ''
+        ter = _DOC.getElementById("toutput2")
+        ter.innerHTML = ''
+        ter = _DOC.getElementById("toutput3")
+        ter.innerHTML = ''
+
+        N = int(Element('n').value)
+        count = 0
+        xp = np.arange(0, 1, 1/N)  # 0~2*PI,step=PI/180
+        yp = np.arange(0, 1, 1/N)
+        for i in range(0,N):
+          xp[i]=random.random()
+          yp[i]=random.random()
+          # d = math.sqrt(xp[i]*xp[i]+yp[i]*yp[i])
+          d = xp[i]*xp[i]+yp[i]*yp[i]
+          if d <= 1:
+              count += 1
+        #print('N=',N)
+        #print('count=',count)
+        #print(f'PI=4*count/N={4*count/N:.6f}')
+        #pyscript.write('toutput2', count, True)
+        #pyscript.write('toutput3', 4*count/N, True)
+        #pyscript.write('toutput1', N, True)
+        
+        Element('toutput1').write(f'N = {N}')
+        Element('toutput2').write(f'count = {count}')
+        Element('toutput3').write(f'pi = 4*count/N = {4.0*count/N:.6f}')
+
+        n=200
+        x = np.arange(0, 1+1/n, 1/n)  # 0~2*PI,step=PI/180
+        y = np.arange(0, 1+1/n, 1/n)
+        
+        for ind in np.arange(len(x)):
+          y[ind]=math.sqrt(1-x[ind]*x[ind])
+        fig, ax = plt.subplots()
+        ax.set_title('x^2+y^2=1') 
+        ax.set_xlabel('x') 
+        ax.set_ylabel('y')
+        ax.set_xlim(0.1)
+        ax.set_ylim(0.1)
+        ax.set_aspect('equal', 'box')
+        
+        ax.plot(xp,yp,'o',c='r')
+        ax.plot(x,y,c='b')
+
+        ax.grid(True)
+        #display(fig, target="plot")
+        pyscript.write('plot',fig)
+    </py-script>
+</html>
